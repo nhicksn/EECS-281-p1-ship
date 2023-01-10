@@ -292,7 +292,7 @@ help:
 # % g++ -std=c++1z -MM *.cpp
 #
 # ADD YOUR OWN DEPENDENCIES HERE
-lab1.o: lab1.cpp sorting.h
+project1.o: project1.cpp project1.h
 ######################
 # TODO (end) #
 ######################
