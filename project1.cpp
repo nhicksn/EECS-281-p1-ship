@@ -9,3 +9,7 @@ using namespace std;
 int main() {
 std::ios::sync_with_stdio(false);
 } // main
+
+// use vector<vector<vector<char>>> to store the layout of the space station
+// resize for coordinate list, with "." being the default char
+// reserve for map, populating it with the input
