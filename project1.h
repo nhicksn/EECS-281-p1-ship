@@ -17,9 +17,9 @@ private:
 
 
     void printHelp() {
-        cout << "Usage: ./project1 [-s|-q] [-o M|L] | -h\n";
-        cout << "You must specify either stack or queue mode, and if you include the ";
-        cout << "output mode then you must specify either M (map) or coordinate list (L)";
+        cout << "Usage: ./ship [-s|-q] [-o M|L] | -h\nYou must specify either stack ";
+        cout << "or queue mode, and if you include the output mode ";
+        cout << "then you must specify either map (M) or coordinate list (L)\n";
     } // printHelp
 
 public:
@@ -35,21 +35,25 @@ public:
             { nullptr,  0,                 nullptr, '\0'},
         }; // long_options
 
-        while((choice = getopt_long(argc, argv, "sqo:h", long_options, &index))) {
+        while((choice = getopt_long(argc, argv, "sqo:h", long_options, &index)) != -1) {
             switch(choice) {
-                case 's':
+                case 's': {
                     if(searchMode != 'a') {
                         cerr << "Multiple routing modes specified\n";
                         exit(1);
                     }
                     searchMode = 's';
+                    break;
+                } // case 's'
                 
-                case 'q':
+                case 'q': {
                     if(searchMode != 'a') {
                         cerr << "Multiple routing modes specified\n";
                         exit(1);
                     }
                     searchMode = 'q';
+                    break;
+                } // case 'q'
                 
                 case 'o': {
                     string arg{optarg};
@@ -59,14 +63,18 @@ public:
                     else if (arg == "L") {
                         outputMode = 'L';
                     }
+                    break;
                 } // case 'o'
-                case 'h':
+                case 'h': {
                     printHelp();
                     exit(0);
+                    break;
+                } // case 'h'
 
-                default:
+                default: {
                     cerr << "Error: invalid option\n";
                     exit(1);
+                } // default case
             } // switch choice
         } // while choice
         if(searchMode == 'a') {
@@ -74,5 +82,4 @@ public:
             exit(1);
         }
     } // getMode
-
 }; // spacestation class
