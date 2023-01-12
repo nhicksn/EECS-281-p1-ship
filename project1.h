@@ -11,9 +11,10 @@ using namespace std;
 class spaceStation {
 private:
     vector<vector<vector<char> > > layout;
-    char inputMode;
-    char searchMode = 'a';
-    char outputMode = 'M';
+    bool inputModeMap;
+    bool searchSelected = false;
+    bool searchModeStack;
+    bool outputModeMap = true;
 
 
     void printHelp() {
@@ -23,7 +24,10 @@ private:
     } // printHelp
 
 public:
-    void getMode(int argc, char *argv[]) {
+    // EFFECTS: This function processes the command line arguments and gets the mode that
+    // the algorithm should be running in
+    // MODIFIES: None
+    void getMode(const int &argc, char *argv[]) {
         opterr = false;
         int choice;
         int index = 0;
@@ -38,31 +42,33 @@ public:
         while((choice = getopt_long(argc, argv, "sqo:h", long_options, &index)) != -1) {
             switch(choice) {
                 case 's': {
-                    if(searchMode != 'a') {
+                    if(searchSelected == true) {
                         cerr << "Multiple routing modes specified\n";
                         exit(1);
-                    }
-                    searchMode = 's';
+                    } // if
+                    searchModeStack = true;
+                    searchSelected = true;
                     break;
                 } // case 's'
                 
                 case 'q': {
-                    if(searchMode != 'a') {
+                    if(searchSelected == true) {
                         cerr << "Multiple routing modes specified\n";
                         exit(1);
-                    }
-                    searchMode = 'q';
+                    } // if
+                    searchModeStack = false;
+                    searchSelected = true;
                     break;
                 } // case 'q'
                 
                 case 'o': {
                     string arg{optarg};
                     if(arg == "M") {
-                        outputMode = 'M';
-                    }
+                        outputModeMap = true;
+                    } // if
                     else if (arg == "L") {
-                        outputMode = 'L';
-                    }
+                        outputModeMap = false;
+                    } // if
                     break;
                 } // case 'o'
                 case 'h': {
@@ -77,9 +83,9 @@ public:
                 } // default case
             } // switch choice
         } // while choice
-        if(searchMode == 'a') {
+        if(searchSelected == false) {
             cerr << "No routing mode specified\n";
             exit(1);
-        }
+        } // if
     } // getMode
 }; // spacestation class
