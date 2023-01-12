@@ -8,7 +8,7 @@
 using namespace std;
 
 
-class SpaceStation {
+class spaceStation {
 private:
     vector<vector<vector<char> > > layout;
     char inputMode;
@@ -39,11 +39,16 @@ public:
             switch(choice) {
                 case 's':
                     if(searchMode != 'a') {
-                        
+                        cerr << "Multiple routing modes specified\n";
+                        exit(1);
                     }
                     searchMode = 's';
                 
                 case 'q':
+                    if(searchMode != 'a') {
+                        cerr << "Multiple routing modes specified\n";
+                        exit(1);
+                    }
                     searchMode = 'q';
                 
                 case 'o': {
@@ -64,6 +69,10 @@ public:
                     exit(1);
             } // switch choice
         } // while choice
+        if(searchMode == 'a') {
+            cerr << "No routing mode specified\n";
+            exit(1);
+        }
     } // getMode
 
 }; // spacestation class

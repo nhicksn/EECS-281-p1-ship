@@ -8,8 +8,10 @@
 
 using namespace std;
 
-int main() {
-std::ios::sync_with_stdio(false);
+int main(int argc, char* argv[]) {
+    std::ios::sync_with_stdio(false);
+    spaceStation s;
+    s.getMode(argc, argv);
 } // main
 
 // use vector<vector<vector<char>>> to store the layout of the space station
