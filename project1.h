@@ -144,6 +144,20 @@ public:
     }
 
     void inputLayoutTiles() {
+        string input;
+        // read input in map format
+        if(inputModeMap) {
+            while(cin >> input) {
+                if(input[0] == '/' && input[1] == '/') continue;
+                for(size_t i = 0; i < input.size(); i++) {
+                    
+                }
+            }
+        }
+        // read input in list format
+        else {
+
+        }
         // need to figure out how to ignore comments
         // need to figure out how to read in one char at a time
         // need to figure out how to separate the elements on each line 
