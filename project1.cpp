@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     std::ios::sync_with_stdio(false);
     spaceStation s;
     s.getMode(argc, argv);
-    s.inputLayout();
+    s.inputLayoutSettings();
     s.outputMap();
 } // main
 

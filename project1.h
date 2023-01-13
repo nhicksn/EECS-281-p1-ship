@@ -119,7 +119,7 @@ public:
         return false;
     }
 
-    void inputLayout() {
+    void inputLayoutSettings() {
         string input;
         cin >> input;
         if(input == "M") {
@@ -130,9 +130,24 @@ public:
         cin >> floorSize;
 
         if(inputModeMap) {
-            // reserve the correct number of spots, and use the map to populate every single spot
-            //layout.reserve();
+            // need to push back each floor to this vector
+            // create 2d vectors of each floor and push back to it
+            layout.reserve(numFloors);
         }
+        else {
+            square floor;
+            floor.type = type_floor;
+            // fills every spot in the 3d vector with floor tiles
+            layout.resize(numFloors, vector<vector<square> >
+            (floorSize, vector<square>(floorSize, floor)));
+        }
+    }
+
+    void inputLayoutTiles() {
+        // need to figure out how to ignore comments
+        // need to figure out how to read in one char at a time
+        // need to figure out how to separate the elements on each line 
+        // in the coordinate list
     }
 
     void outputMap() {
