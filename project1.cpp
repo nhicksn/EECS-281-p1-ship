@@ -14,6 +14,5 @@ int main(int argc, char* argv[]) {
     s.getMode(argc, argv);
 } // main
 
-// use vector<vector<vector<char>>> to store the layout of the space station
 // resize for coordinate list, with "." being the default char
 // reserve for map, populating it with the input

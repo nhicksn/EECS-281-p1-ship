@@ -8,9 +8,14 @@
 using namespace std;
 
 
+struct square {
+    bool isDiscovered = false;
+    char type;
+};
+
 class spaceStation {
 private:
-    vector<vector<vector<char> > > layout;
+    vector<vector<vector<square> > > layout;
     bool inputModeMap;
     bool searchSelected = false;
     bool searchModeStack;
