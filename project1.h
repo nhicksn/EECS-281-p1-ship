@@ -147,7 +147,7 @@ public:
         if(inputModeMap) {
             vector<vector<square>> level;
             level.reserve(floorSize);
-            while(cin >> input) {
+            while(getline(cin, input)) {
                 // check that the line isn't a comment
                 if(input[0] == '/' && input[1] == '/') continue;
                 // initialize vector to store this line
@@ -179,12 +179,12 @@ public:
                     row.push_back(s);
                 }
                 level.push_back(row);
-            }
-            layout.push_back(level);
-        }
+            } // while getline
+        } // map mode input
         // read input in list format
         else {
-            while(cin >> input) {
+            while(getline(cin, input)) {
+                cout << input << "\n";
                 if(input[0] == '/' && input[1] == '/') continue;
                 square s;
                 if(input[7] == '.') {
@@ -204,6 +204,8 @@ public:
                 }
                 layout[input[1]][input[3]][input[5]] = s;
             }
+            // for testing purposes
+            cout << layout.size() << "\n";
         }
     } // inputLayoutTiles
 
