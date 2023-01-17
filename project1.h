@@ -12,7 +12,8 @@ enum squareType {
     wall,
     elevator,
     hangar,
-    floor
+    floor,
+    start
 };
 
 struct square {
@@ -147,29 +148,63 @@ public:
             vector<vector<square>> level;
             level.reserve(floorSize);
             while(cin >> input) {
+                // check that the line isn't a comment
                 if(input[0] == '/' && input[1] == '/') continue;
+                // initialize vector to store this line
                 vector<square> row;
                 row.reserve(floorSize);
-                for(size_t i = 0; i < input.size(); i++) {
-                    if(level.size() == floorSize) {
-                        layout.push_back(level);
-                        level.clear();
-                    }
+                // check that this level isn't full
+                if(level.size() == floorSize) {
+                    // if it is, push back to layout and move on to next level
+                    layout.push_back(level);
+                    level.clear();
                 }
+                for(size_t i = 0; i < input.size(); i++) {
+                    square s;
+                    if(input[i] == '.') {
+                        s.type = floor;
+                    }
+                    else if(input[i] == '#') {
+                        s.type = wall;
+                    }
+                    else if(input[i] == 'E') {
+                        s.type = elevator;
+                    }
+                    else if(input[i] == 'H') {
+                        s.type = hangar;
+                    }
+                    else {
+                        s.type = start;
+                    }
+                    row.push_back(s);
+                }
+                level.push_back(row);
             }
+            layout.push_back(level);
         }
         // read input in list format
         else {
             while(cin >> input) {
                 if(input[0] == '/' && input[1] == '/') continue;
-                for(size_t i = 0; i < input.size(); i++) {
-                    
+                square s;
+                if(input[7] == '.') {
+                    s.type = floor;
                 }
+                else if(input[7] == '#') {
+                    s.type = wall;
+                }
+                else if(input[7] == 'E') {
+                    s.type = elevator;
+                }
+                else if(input[7] == 'H') {
+                    s.type = hangar;
+                }
+                else {
+                    s.type = start;
+                }
+                layout[input[1]][input[3]][input[5]] = s;
             }
         }
-        // need to figure out how to read in one char at a time
-        // need to figure out how to separate the elements on each line 
-        // in the coordinate list
     } // inputLayoutTiles
 
     void outputMap() {

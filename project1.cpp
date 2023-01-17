@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     s.getMode(argc, argv);
     s.inputLayoutSettings();
     s.outputMap();
+    s.inputLayoutTiles();
 } // main
 
 // resize for coordinate list, with "." being the default char
