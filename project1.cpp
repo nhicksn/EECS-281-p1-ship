@@ -11,8 +11,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     std::ios::sync_with_stdio(false);
-    spaceStation s;
-    s.getMode(argc, argv);
+    spaceStation s(argc, argv);
     s.inputLayoutSettings();
     s.outputMap();
     s.inputLayoutTiles();

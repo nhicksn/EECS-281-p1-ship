@@ -8,7 +8,7 @@
 
 using namespace std;
 
-enum squareType {
+enum squareType : uint8_t {
     wall,
     elevator,
     hangar,
@@ -39,6 +39,13 @@ private:
     } // printHelp
 
 public:
+
+    // custom constructor
+    // EFFECTS takes in the command line arguments and retrives the settings
+    spaceStation(const int &argc, char *argv[]) {
+        getMode(argc, argv);
+    }
+
     // EFFECTS This function processes the command line arguments and gets the mode that
     // the algorithm should be running in
     void getMode(const int &argc, char *argv[]) {
