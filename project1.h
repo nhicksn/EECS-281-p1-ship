@@ -15,13 +15,8 @@ enum squareType {
     type_floor
 };
 
-
 struct square {
     bool isDiscovered = false;
-    squareType type;
-};
-
-struct searchContainerSquare {
     squareType type;
 };
 
@@ -119,6 +114,7 @@ public:
         return false;
     }
 
+    // EFFECTS reads from cin to find the settings of the input file
     void inputLayoutSettings() {
         string input;
         cin >> input;
@@ -141,8 +137,9 @@ public:
             layout.resize(numFloors, vector<vector<square> >
             (floorSize, vector<square>(floorSize, floor)));
         }
-    }
+    } // inputLayoutSettings
 
+    // EFFECTS reads from cin to get the layout of the inputted space station
     void inputLayoutTiles() {
         string input;
         // read input in map format
@@ -156,13 +153,17 @@ public:
         }
         // read input in list format
         else {
-
+            while(cin >> input) {
+                if(input[0] == '/' && input[1] == '/') continue;
+                for(size_t i = 0; i < input.size(); i++) {
+                    
+                }
+            }
         }
-        // need to figure out how to ignore comments
         // need to figure out how to read in one char at a time
         // need to figure out how to separate the elements on each line 
         // in the coordinate list
-    }
+    } // inputLayoutTiles
 
     void outputMap() {
         if(inputModeMap) {
@@ -174,16 +175,17 @@ public:
         }
         else cout << "output mode: list \n";
         cout << numFloors << " " << floorSize << "\n";
-    }
+    } // outputMap
 }; // spacestation class
+
 
 class searchContainer {
 public:
-    deque<searchContainerSquare> search;
+    deque<square> search;
 
 private:
     void searchSquare() {
         return;
     } 
 
-};
+}; // searchContainer class
