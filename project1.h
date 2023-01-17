@@ -9,10 +9,10 @@
 using namespace std;
 
 enum squareType {
-    type_wall,
-    type_elevator,
-    type_hangar,
-    type_floor
+    wall,
+    elevator,
+    hangar,
+    floor
 };
 
 struct square {
@@ -131,11 +131,11 @@ public:
             layout.reserve(numFloors);
         }
         else {
-            square floor;
-            floor.type = type_floor;
+            square floorSquare;
+            floorSquare.type = floor;
             // fills every spot in the 3d vector with floor tiles
             layout.resize(numFloors, vector<vector<square> >
-            (floorSize, vector<square>(floorSize, floor)));
+            (floorSize, vector<square>(floorSize, floorSquare)));
         }
     } // inputLayoutSettings
 
@@ -144,10 +144,17 @@ public:
         string input;
         // read input in map format
         if(inputModeMap) {
+            vector<vector<square>> level;
+            level.reserve(floorSize);
             while(cin >> input) {
                 if(input[0] == '/' && input[1] == '/') continue;
+                vector<square> row;
+                row.reserve(floorSize);
                 for(size_t i = 0; i < input.size(); i++) {
-                    
+                    if(level.size() == floorSize) {
+                        layout.push_back(level);
+                        level.clear();
+                    }
                 }
             }
         }
