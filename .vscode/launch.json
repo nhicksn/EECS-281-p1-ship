@@ -5,7 +5,7 @@
       "name": "(gdb) Launch",
       "type": "cppdbg",
       "request": "launch",
-      "args": ["-q", "<", "test1input-m.txt"],
+      "args": ["-q", "<", "test1input-l.txt"],
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/mnt/c/users/noahh/downloads/umich22/eecs281/p1-ship",

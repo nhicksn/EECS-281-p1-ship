@@ -45,16 +45,6 @@ public:
     spaceStation(const int &argc, char *argv[]) {
         getMode(argc, argv);
         inputLayoutSettings();
-        if(!inputModeMap) {
-            square floorSquare;
-            floorSquare.type = floor;
-            // fills every spot in the 3d vector with floor tiles
-            vector<vector<vector<square> > > layout(numFloors, vector<vector<square> >
-                                (floorSize, vector<square>(floorSize, floorSquare)));
-        }
-        else {
-            layout.reserve(numFloors);
-        }
     }
 
     // EFFECTS This function processes the command line arguments and gets the mode that
@@ -144,7 +134,7 @@ public:
         cin >> numFloors;
         cin >> floorSize;
 
-        // included in constructor now
+        // included in inputLayout now
         // if(inputModeMap) {
         //     // need to push back each floor to this vector
         //     // create 2d vectors of each floor and push back to it
@@ -163,6 +153,7 @@ public:
         string input;
         // read input in map format
         if(inputModeMap) {
+            layout.reserve(numFloors);
             vector<vector<square>> level;
             level.reserve(floorSize);
             getline(cin, input);
@@ -199,9 +190,15 @@ public:
                 }
                 level.push_back(row);
             } // while getline
+            layout.push_back(level);
         } // map mode input
         // read input in list format
         else {
+            square floorSquare;
+            floorSquare.type = floor;
+            // fills every spot in the 3d vector with floor tiles
+            layout.resize(numFloors, vector<vector<square> >
+                (floorSize, vector<square>(floorSize, floorSquare)));
             getline(cin, input);
             while(getline(cin, input)) {
                 // check that the input isn't a comment
@@ -223,9 +220,7 @@ public:
                     s.type = start;
                 }
                 layout[input[1]][input[3]][input[5]] = s;
-            }
-            // for testing purposes
-            cout << layout.size() << "\n";
+            } // while getline
         } // list mode input
     } // inputLayoutTiles
 

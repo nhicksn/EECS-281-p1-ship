@@ -3,7 +3,8 @@
     "iosfwd": "cpp",
     "deque": "cpp",
     "cstdint": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "vector": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
