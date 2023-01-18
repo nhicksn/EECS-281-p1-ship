@@ -12,9 +12,8 @@ using namespace std;
 int main(int argc, char* argv[]) {
     std::ios::sync_with_stdio(false);
     spaceStation s(argc, argv);
-    s.inputLayoutSettings();
-    s.outputMap();
     s.inputLayoutTiles();
+    s.outputLayout();
 } // main
 
 // resize for coordinate list, with "." being the default char

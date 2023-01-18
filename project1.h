@@ -41,9 +41,20 @@ private:
 public:
 
     // custom constructor
-    // EFFECTS takes in the command line arguments and retrives the settings
+    // EFFECTS takes in the command line arguments and retrieves the settings
     spaceStation(const int &argc, char *argv[]) {
         getMode(argc, argv);
+        inputLayoutSettings();
+        if(!inputModeMap) {
+            square floorSquare;
+            floorSquare.type = floor;
+            // fills every spot in the 3d vector with floor tiles
+            vector<vector<vector<square> > > layout(numFloors, vector<vector<square> >
+                                (floorSize, vector<square>(floorSize, floorSquare)));
+        }
+        else {
+            layout.reserve(numFloors);
+        }
     }
 
     // EFFECTS This function processes the command line arguments and gets the mode that
@@ -133,18 +144,18 @@ public:
         cin >> numFloors;
         cin >> floorSize;
 
-        if(inputModeMap) {
-            // need to push back each floor to this vector
-            // create 2d vectors of each floor and push back to it
-            layout.reserve(numFloors);
-        }
-        else {
-            square floorSquare;
-            floorSquare.type = floor;
-            // fills every spot in the 3d vector with floor tiles
-            layout.resize(numFloors, vector<vector<square> >
-            (floorSize, vector<square>(floorSize, floorSquare)));
-        }
+        // included in constructor now
+        // if(inputModeMap) {
+        //     // need to push back each floor to this vector
+        //     // create 2d vectors of each floor and push back to it
+        //     layout.reserve(numFloors);
+        // }
+        // else {
+        //     square floorSquare;
+        //     floorSquare.type = floor;
+        //     // fills every spot in the 3d vector with floor tiles
+        //     layout.resize(numFloors, vector<vector<square> >(floorSize, vector<square>(floorSize, floorSquare)));
+        // }
     } // inputLayoutSettings
 
     // EFFECTS reads from cin to get the layout of the inputted space station
@@ -154,6 +165,7 @@ public:
         if(inputModeMap) {
             vector<vector<square>> level;
             level.reserve(floorSize);
+            getline(cin, input);
             while(getline(cin, input)) {
                 // check that the line isn't a comment
                 if(input[0] == '/' && input[1] == '/') continue;
@@ -190,8 +202,9 @@ public:
         } // map mode input
         // read input in list format
         else {
+            getline(cin, input);
             while(getline(cin, input)) {
-                cout << input << "\n";
+                // check that the input isn't a comment
                 if(input[0] == '/' && input[1] == '/') continue;
                 square s;
                 if(input[7] == '.') {
@@ -213,20 +226,20 @@ public:
             }
             // for testing purposes
             cout << layout.size() << "\n";
-        }
+        } // list mode input
     } // inputLayoutTiles
 
-    void outputMap() {
-        if(inputModeMap) {
-            cout << "input mode: map\n";
+    void outputLayout() {
+        for(int i = 0; i < numFloors; i++) {
+            for(int j = 0; j < floorSize; j++) {
+                for(int k = 0; k < floorSize; k++) {
+                    cout << layout[i][j][k].type; 
+                }
+                cout << "\n";
+            }
+            cout << "\n";
         }
-        else cout << "input mode: list\n";
-        if(outputModeMap) {
-            cout << "output mode: map\n";
-        }
-        else cout << "output mode: list \n";
-        cout << numFloors << " " << floorSize << "\n";
-    } // outputMap
+    }
 }; // spacestation class
 
 
