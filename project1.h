@@ -219,6 +219,7 @@ public:
                 else {
                     s.type = start;
                 }
+                // segfaults here
                 layout[input[1]][input[3]][input[5]] = s;
             } // while getline
         } // list mode input
