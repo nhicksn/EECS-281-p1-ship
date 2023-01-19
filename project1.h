@@ -220,7 +220,7 @@ public:
                     s.type = start;
                 }
                 // segfaults here
-                layout[input[1]][input[3]][input[5]] = s;
+                layout[input[1] - '0'][input[3] - '0'][input[5] - '0'] = s;
             } // while getline
         } // list mode input
     } // inputLayoutTiles
