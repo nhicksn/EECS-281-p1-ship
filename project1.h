@@ -16,6 +16,10 @@ enum squareType : uint8_t {
     start
 };
 
+struct coordinate {
+    uint8_t level, row, column;
+};
+
 struct square {
     bool isDiscovered = false;
     squareType type;
@@ -112,13 +116,13 @@ public:
     } // getMode
 
     // EFFECTS Returns true if the sorting mode is stack, and false if it is queue
-    bool stackMode() {
+    bool stackMode() const {
         if(searchModeStack == true) return true;
         return false;
     }
 
     // EFFECTS Returns true if the output mode is map, and false if it is coordinate list
-    bool mapMode() {
+    bool mapMode() const {
         if(outputModeMap == true) return true;
         return false;
     }
@@ -133,19 +137,6 @@ public:
         else inputModeMap = false;
         cin >> numFloors;
         cin >> floorSize;
-
-        // included in inputLayout now
-        // if(inputModeMap) {
-        //     // need to push back each floor to this vector
-        //     // create 2d vectors of each floor and push back to it
-        //     layout.reserve(numFloors);
-        // }
-        // else {
-        //     square floorSquare;
-        //     floorSquare.type = floor;
-        //     // fills every spot in the 3d vector with floor tiles
-        //     layout.resize(numFloors, vector<vector<square> >(floorSize, vector<square>(floorSize, floorSquare)));
-        // }
     } // inputLayoutSettings
 
     // EFFECTS reads from cin to get the layout of the inputted space station
@@ -183,8 +174,12 @@ public:
                     else if(input[i] == 'H') {
                         s.type = hangar;
                     }
-                    else {
+                    else if(input[i] == 'S') {
                         s.type = start;
+                    }
+                    else {
+                        cerr << "Invalid map character\n";
+                        exit(1);
                     }
                     row.push_back(s);
                 }
@@ -216,10 +211,25 @@ public:
                 else if(input[7] == 'H') {
                     s.type = hangar;
                 }
-                else {
+                else if(input[7] == 'S') {
                     s.type = start;
                 }
-                // segfaults here
+                else {
+                    cerr << "Invalid map character\n";
+                }
+                // make sure the dimensions are valid
+                if((input[1] - '0') < 0 || (input[1] - '0') >= numFloors) {
+                    cerr << "Invalid map level\n";
+                    exit(1);
+                }
+                else if((input[3] - '0') < 0 || (input[3] - '0') >= floorSize) {
+                    cerr << "Invalid map row\n";
+                    exit(1);
+                }
+                else if((input[5] - '0') < 0 || (input[5] - '0') >= floorSize) {
+                    cerr << "Invalid map column\n";
+                    exit(1);
+                }
                 layout[input[1] - '0'][input[3] - '0'][input[5] - '0'] = s;
             } // while getline
         } // list mode input
@@ -241,11 +251,28 @@ public:
 
 class searchContainer {
 public:
-    deque<square> search;
+    deque<coordinate> search;
+    coordinate currentLocation;
 
 private:
     void searchSquare() {
         return;
-    } 
+    }
+
+    void findSolution(const spaceStation &s) {
+        if(s.stackMode()) {
+            while(!search.empty()) {
+                currentLocation = search.front();
+                search.pop_front();
+            } // while
+        } // if search in stack mode
+
+        else {
+            while(!search.empty()) {
+                currentLocation = search.back();
+                search.pop_back();
+            } // while
+        } // if search in queue mode
+    }
 
 }; // searchContainer class

@@ -1,4 +1,7 @@
 L
 2
 4
+// very simple solution, start and hangar right next to each other
 // sample L mode input file, queue mode, two 4x4 levels
+(0,0,0,S)
+(0,0,1,H)
