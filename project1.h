@@ -195,9 +195,12 @@ public:
             layout.resize(numFloors, vector<vector<square> >
                 (floorSize, vector<square>(floorSize, floorSquare)));
             getline(cin, input);
-            while(getline(cin, input)) {
+            while(cin >> input) {
                 // check that the input isn't a comment
-                if(input[0] == '/' && input[1] == '/') continue;
+                if(input[0] == '/') {
+                    getline(cin, input);
+                    continue;
+                }
                 square s;
                 if(input[7] == '.') {
                     s.type = floor;
