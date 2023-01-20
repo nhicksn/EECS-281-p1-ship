@@ -34,7 +34,12 @@ private:
     bool outputModeMap = true;
     uint16_t numFloors;
     uint16_t floorSize;
+    coordinate currentLocation;
+    deque<coordinate> searchContainer;
 
+    void searchSquare() {
+        return;
+    }
 
     void printHelp() {
         cout << "Usage: ./ship [-s|-q] [-o M|L] | -h\nYou must specify either stack ";
@@ -141,16 +146,19 @@ public:
 
     // EFFECTS reads from cin to get the layout of the inputted space station
     void inputLayoutTiles() {
-        string input;
         // read input in map format
         if(inputModeMap) {
+            string input;
             layout.reserve(numFloors);
             vector<vector<square>> level;
             level.reserve(floorSize);
             getline(cin, input);
-            while(getline(cin, input)) {
+            while(cin >> input) {
                 // check that the line isn't a comment
-                if(input[0] == '/' && input[1] == '/') continue;
+                if(input[0] == '/') {
+                    getline(cin, input);
+                    continue;
+                }
                 // initialize vector to store this line
                 vector<square> row;
                 row.reserve(floorSize);
@@ -189,6 +197,8 @@ public:
         } // map mode input
         // read input in list format
         else {
+            // TODO: Figure out how to process double digit levels and rows and columns
+            string input;
             square floorSquare;
             floorSquare.type = floor;
             // fills every spot in the 3d vector with floor tiles
@@ -249,33 +259,22 @@ public:
             cout << "\n";
         }
     }
-}; // spacestation class
 
-
-class searchContainer {
-public:
-    deque<coordinate> search;
-    coordinate currentLocation;
-
-private:
-    void searchSquare() {
-        return;
-    }
+    
 
     void findSolution(const spaceStation &s) {
         if(s.stackMode()) {
-            while(!search.empty()) {
-                currentLocation = search.front();
-                search.pop_front();
+            while(!searchContainer.empty()) {
+                currentLocation = searchContainer.front();
+                searchContainer.pop_front();
             } // while
         } // if search in stack mode
 
         else {
-            while(!search.empty()) {
-                currentLocation = search.back();
-                search.pop_back();
+            while(!searchContainer.empty()) {
+                currentLocation = searchContainer.back();
+                searchContainer.pop_back();
             } // while
         } // if search in queue mode
     }
-
-}; // searchContainer class
+}; // spacestation class
