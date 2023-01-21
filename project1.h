@@ -198,53 +198,56 @@ public:
         // read input in list format
         else {
             // TODO: Figure out how to process double digit levels and rows and columns
-            string input;
+            char input;
+            string trash;
             square floorSquare;
             floorSquare.type = floor;
             // fills every spot in the 3d vector with floor tiles
             layout.resize(numFloors, vector<vector<square> >
                 (floorSize, vector<square>(floorSize, floorSquare)));
-            getline(cin, input);
+            getline(cin, trash);
             while(cin >> input) {
-                // check that the input isn't a comment
-                if(input[0] == '/') {
-                    getline(cin, input);
+                int level;
+                int column;
+                int row;
+                if(input == '/') {
+                    getline(cin, trash);
                     continue;
                 }
-                square s;
-                if(input[7] == '.') {
-                    s.type = floor;
-                }
-                else if(input[7] == '#') {
-                    s.type = wall;
-                }
-                else if(input[7] == 'E') {
-                    s.type = elevator;
-                }
-                else if(input[7] == 'H') {
-                    s.type = hangar;
-                }
-                else if(input[7] == 'S') {
-                    s.type = start;
-                }
                 else {
-                    cerr << "Invalid map character\n";
+                    square s;
+                    // reads in level, comma, column, comma, row, comma, 
+                    // then the type of square
+                    cin >> level;
+                    cin >> input;
+                    cin >> row;
+                    cin >> input;
+                    cin >> column;
+                    cin >> input;
+                    cin >> input;
+                    if(input == '.') {
+                        s.type = floor;
+                    }
+                    else if(input == '#') {
+                        s.type = wall;
+                    }
+                    else if(input == 'E') {
+                        s.type = elevator;
+                    }
+                    else if(input == 'H') {
+                        s.type = hangar;
+                    }
+                    else if(input == 'S') {
+                        s.type = start;
+                    }
+                    else {
+                        cerr << "Invalid map character\n";
+                        exit(1);
+                    }
+                    layout[level][row][column] = s;
+                    cin >> input;
                 }
-                // make sure the dimensions are valid
-                if((input[1] - '0') < 0 || (input[1] - '0') >= numFloors) {
-                    cerr << "Invalid map level\n";
-                    exit(1);
-                }
-                else if((input[3] - '0') < 0 || (input[3] - '0') >= floorSize) {
-                    cerr << "Invalid map row\n";
-                    exit(1);
-                }
-                else if((input[5] - '0') < 0 || (input[5] - '0') >= floorSize) {
-                    cerr << "Invalid map column\n";
-                    exit(1);
-                }
-                layout[input[1] - '0'][input[3] - '0'][input[5] - '0'] = s;
-            } // while getline
+            } // while
         } // list mode input
     } // inputLayoutTiles
 
