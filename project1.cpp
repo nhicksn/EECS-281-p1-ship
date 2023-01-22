@@ -13,7 +13,11 @@ int main(int argc, char* argv[]) {
     std::ios::sync_with_stdio(false);
     spaceStation s(argc, argv);
     s.inputLayoutTiles();
-    //s.outputLayout();
+    s.outputSolution();
+
+
+    // for testing purposes
+    // s.outputPositions();
 } // main
 
 // resize for coordinate list, with "." being the default char

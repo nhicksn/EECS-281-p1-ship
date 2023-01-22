@@ -8,21 +8,13 @@
 
 using namespace std;
 
-enum squareType : uint8_t {
-    wall,
-    elevator,
-    hangar,
-    floor,
-    start
-};
-
 struct coordinate {
-    uint8_t level, row, column;
+    uint16_t level, row, column;
 };
 
 struct square {
     bool isDiscovered = false;
-    squareType type;
+    char type;
 };
 
 class spaceStation {
@@ -34,6 +26,7 @@ private:
     bool outputModeMap = true;
     uint16_t numFloors;
     uint16_t floorSize;
+    coordinate startPosition;
     coordinate currentLocation;
     deque<coordinate> searchContainer;
 
@@ -170,20 +163,14 @@ public:
                 }
                 for(size_t i = 0; i < input.size(); i++) {
                     square s;
-                    if(input[i] == '.') {
-                        s.type = floor;
-                    }
-                    else if(input[i] == '#') {
-                        s.type = wall;
-                    }
-                    else if(input[i] == 'E') {
-                        s.type = elevator;
-                    }
-                    else if(input[i] == 'H') {
-                        s.type = hangar;
+                    if(input[i] == '.' || input[i] == '#' || input[i] == 'E' || input[i] == 'H') {
+                        s.type = input[i];
                     }
                     else if(input[i] == 'S') {
-                        s.type = start;
+                        s.type = 'S';
+                        startPosition.level = static_cast<uint16_t>(layout.size() - 1);
+                        startPosition.row = static_cast<uint16_t>(level.size() - 1);
+                        startPosition.column = static_cast<uint16_t>(row.size() - 1);
                     }
                     else {
                         cerr << "Invalid map character\n";
@@ -197,19 +184,18 @@ public:
         } // map mode input
         // read input in list format
         else {
-            // TODO: Figure out how to process double digit levels and rows and columns
             char input;
             string trash;
             square floorSquare;
-            floorSquare.type = floor;
+            floorSquare.type = '.';
             // fills every spot in the 3d vector with floor tiles
             layout.resize(numFloors, vector<vector<square> >
                 (floorSize, vector<square>(floorSize, floorSquare)));
             getline(cin, trash);
             while(cin >> input) {
-                int level;
-                int column;
-                int row;
+                uint16_t level;
+                uint16_t column;
+                uint16_t row;
                 if(input == '/') {
                     getline(cin, trash);
                     continue;
@@ -225,23 +211,29 @@ public:
                     cin >> column;
                     cin >> input;
                     cin >> input;
-                    if(input == '.') {
-                        s.type = floor;
-                    }
-                    else if(input == '#') {
-                        s.type = wall;
-                    }
-                    else if(input == 'E') {
-                        s.type = elevator;
-                    }
-                    else if(input == 'H') {
-                        s.type = hangar;
+                    if(input == '.' || input == '#' || input == 'E' || input == 'H') {
+                        s.type = input;
                     }
                     else if(input == 'S') {
-                        s.type = start;
+                        s.type = 'S';
+                        startPosition.level = level;
+                        startPosition.row = row;
+                        startPosition.column = column;
                     }
                     else {
                         cerr << "Invalid map character\n";
+                        exit(1);
+                    }
+                    if(level >= numFloors) {
+                        cerr << "Invalid map level\n";
+                        exit(1);
+                    }
+                    else if(row >= floorSize) {
+                        cerr << "Invalid map row\n";
+                        exit(1);
+                    }
+                    else if(column >= floorSize) {
+                        cerr << "Invalid map column\n";
                         exit(1);
                     }
                     layout[level][row][column] = s;
@@ -251,21 +243,31 @@ public:
         } // list mode input
     } // inputLayoutTiles
 
-    void outputLayout() {
+    // TODO
+    void outputSolution() {
         for(int i = 0; i < numFloors; i++) {
+            cout << "//level " << i << '\n';
             for(int j = 0; j < floorSize; j++) {
                 for(int k = 0; k < floorSize; k++) {
                     cout << layout[i][j][k].type; 
                 }
                 cout << "\n";
             }
-            cout << "\n";
         }
     }
 
-    
 
+    // for testing purposes
+    // void outputPositions() {
+    //     // check if start position is correct
+    //     cout << "Start position: " << unsigned(startPosition.level) << ", " << 
+    //     unsigned(startPosition.row) << ", " << unsigned(startPosition.column) << '\n';
+    // }
+
+    
+    // TODO
     void findSolution(const spaceStation &s) {
+        // algorithm for stack mode
         if(s.stackMode()) {
             while(!searchContainer.empty()) {
                 currentLocation = searchContainer.front();
@@ -273,6 +275,7 @@ public:
             } // while
         } // if search in stack mode
 
+        // algorithhm for queue mode
         else {
             while(!searchContainer.empty()) {
                 currentLocation = searchContainer.back();
