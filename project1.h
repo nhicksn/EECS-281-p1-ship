@@ -30,10 +30,6 @@ private:
     coordinate currentLocation;
     deque<coordinate> searchContainer;
 
-    void searchSquare() {
-        return;
-    }
-
     void printHelp() {
         cout << "Usage: ./ship [-s|-q] [-o M|L] | -h\nYou must specify either stack ";
         cout << "or queue mode, and if you include the output mode ";
@@ -113,18 +109,6 @@ public:
         } // if
     } // getMode
 
-    // EFFECTS Returns true if the sorting mode is stack, and false if it is queue
-    bool stackMode() const {
-        if(searchModeStack == true) return true;
-        return false;
-    }
-
-    // EFFECTS Returns true if the output mode is map, and false if it is coordinate list
-    bool mapMode() const {
-        if(outputModeMap == true) return true;
-        return false;
-    }
-
     // EFFECTS reads from cin to find the settings of the input file
     void inputLayoutSettings() {
         string input;
@@ -163,7 +147,8 @@ public:
                 }
                 for(size_t i = 0; i < input.size(); i++) {
                     square s;
-                    if(input[i] == '.' || input[i] == '#' || input[i] == 'E' || input[i] == 'H') {
+                    if(input[i] == '.' || input[i] == '#' || input[i] == 'E' || 
+                                                            input[i] == 'H') {
                         s.type = input[i];
                     }
                     else if(input[i] == 'S') {
@@ -266,21 +251,20 @@ public:
 
     
     // TODO
-    void findSolution(const spaceStation &s) {
-        // algorithm for stack mode
-        if(s.stackMode()) {
-            while(!searchContainer.empty()) {
+    void findSolution() {
+        searchContainer.push_back(startPosition);
+        layout[startPosition.level][startPosition.row][startPosition.column].isDiscovered 
+                                                                                = true;
+        while(!searchContainer.empty()) {
+            if(searchModeStack) {
                 currentLocation = searchContainer.front();
                 searchContainer.pop_front();
-            } // while
-        } // if search in stack mode
-
-        // algorithhm for queue mode
-        else {
-            while(!searchContainer.empty()) {
+            } // stack mode
+            else {
                 currentLocation = searchContainer.back();
                 searchContainer.pop_back();
-            } // while
-        } // if search in queue mode
+            } // queue mode
+            
+        } // while
     }
 }; // spacestation class
