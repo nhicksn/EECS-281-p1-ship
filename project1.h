@@ -10,11 +10,16 @@ using namespace std;
 
 struct coordinate {
     uint16_t level, row, column;
+    coordinate(uint16_t l, uint16_t r, uint16_t c) : level(l), row(r), column(c) {}
+    coordinate() : level(0), row(0), column(0) {}
 };
 
 struct square {
     bool isDiscovered = false;
     char type;
+    char direction;
+    square(char t) : type(t) {}
+    square() : type('u'), direction('u') {}
 };
 
 class spaceStation {
@@ -24,6 +29,7 @@ private:
     bool searchSelected = false;
     bool searchModeStack;
     bool outputModeMap = true;
+    bool hangarFound = false;
     uint16_t numFloors;
     uint16_t floorSize;
     coordinate startPosition;
@@ -171,8 +177,7 @@ public:
         else {
             char input;
             string trash;
-            square floorSquare;
-            floorSquare.type = '.';
+            square floorSquare('.');
             // fills every spot in the 3d vector with floor tiles
             layout.resize(numFloors, vector<vector<square> >
                 (floorSize, vector<square>(floorSize, floorSquare)));
@@ -244,6 +249,9 @@ public:
         }
         else { //TODO
             cout << "//path taken\n";
+            if(hangarFound == false) {
+                return;
+            }
         } // output mode for list
     }
     
@@ -253,68 +261,96 @@ public:
         layout[startPosition.level][startPosition.row][startPosition.column].isDiscovered 
                                                                                 = true;
         while(!searchContainer.empty()) {
-            currentLocation = searchContainer.front();
-            searchContainer.pop_front();
+            if(searchModeStack) {
+                currentLocation = searchContainer.front();
+                searchContainer.pop_front();
+            }
+            else {
+                currentLocation = searchContainer.back();
+                searchContainer.pop_back();
+            }
 
-            uint16_t level = currentLocation.level;
-            uint16_t row = currentLocation.row;
-            uint16_t column = currentLocation.column;
+            uint16_t l = currentLocation.level;
+            uint16_t r = currentLocation.row;
+            uint16_t c = currentLocation.column;
+
             // check north
-            if(row > 0 && layout[level][row - 1][column].isDiscovered == false && 
-                                    layout[level][row - 1][column].type != '#') {
-                coordinate c;
-                c.level = level;
-                c.row = row - 1;
-                c.column = column;
-                if(searchModeStack) {
-                    searchContainer.push_front(c);
+            if(r > 0 && layout[l][r - 1][c].isDiscovered == false 
+                            && layout[l][r - 1][c].type != '#') {
+                if(layout[l][r - 1][c].type == 'H') {
+                    hangarFound = true;
+                    layout[l][r - 1][c].isDiscovered = true;
+                    layout[l][r - 1][c].direction = 'n';
+                    searchContainer.clear();
+                    return;
                 }
-                else {
-                    searchContainer.push_back(c);
-                }
+                coordinate coor(l, static_cast<uint16_t>(r-1), c);
+                layout[l][r - 1][c].isDiscovered = true;
+                layout[l][r - 1][c].direction = 'n';
+                searchContainer.push_front(coor);
             }
             // check east
-            if(column < floorSize - 1 && layout[level][row][column + 1].isDiscovered == false && 
-                                    layout[level][row + 1][column].type != '#') {
-                coordinate c;
-                c.level = level;
-                c.row = row;
-                c.column = column + 1;
-                if(searchModeStack) {
-                    searchContainer.push_front(c);
+            if(c < floorSize - 1 && layout[l][r][c + 1].isDiscovered == false 
+                                        && layout[l][r][c + 1].type != '#') {
+                if(layout[l][r][c + 1].type == 'H') {
+                    hangarFound = true;
+                    layout[l][r][c + 1].isDiscovered = true;
+                    layout[l][r][c + 1].direction = 'e';
+                    searchContainer.clear();
+                    return;
                 }
-                else {
-                    searchContainer.push_back(c);
-                }
+                coordinate coor(l, r, static_cast<uint16_t>(c + 1));
+                layout[l][r][c + 1].isDiscovered = true;
+                layout[l][r][c + 1].direction = 'e';
+                searchContainer.push_front(coor);
             }
             //check south
-            if(row < floorSize - 1 && layout[level][row + 1][column].isDiscovered == false && 
-                                    layout[level][row + 1][column].type != '#') {
-                coordinate c;
-                c.level = level;
-                c.row = row + 1;
-                c.column = column;
-                if(searchModeStack) {
-                    searchContainer.push_front(c);
+            if(r < floorSize - 1 && layout[l][r + 1][c].isDiscovered == false 
+                                        && layout[l][r + 1][c].type != '#') {
+                if(layout[l][r + 1][c].type == 'H') {
+                    hangarFound = true;
+                    layout[l][r + 1][c].isDiscovered = true;
+                    layout[l][r + 1][c].direction = 's';
+                    searchContainer.clear();
+                    return;
                 }
-                else {
-                    searchContainer.push_back(c);
-                }
+                coordinate coor(l, static_cast<uint16_t>(r + 1), c);
+                layout[l][r + 1][c].isDiscovered = true;
+                layout[l][r + 1][c].direction = 's';
+                searchContainer.push_front(coor);
             }
             //check west
-            if(column > 0 && layout[level][row][column - 1].isDiscovered == false && 
-                                    layout[level][column - 1][column].type != '#') {
-                coordinate c;
-                c.level = level;
-                c.row = row;
-                c.column = column - 1;
-                if(searchModeStack) {
-                    searchContainer.push_front(c);
+            if(c > 0 && layout[l][r][c - 1].isDiscovered == false 
+                            && layout[l][r][c - 1].type != '#') {
+                if(layout[l][r][c - 1].type == 'H') {
+                    hangarFound = true;
+                    layout[l][r][c - 1].isDiscovered = true;
+                    layout[l][r][c - 1].direction = 'w';
+                    searchContainer.clear();
+                    return;
                 }
-                else {
-                    searchContainer.push_back(c);
+                coordinate coor(l, r, static_cast<uint16_t>(c - 1));
+                layout[l][r][c - 1].isDiscovered = true;
+                layout[l][r][c - 1].direction = 'w';
+                searchContainer.push_front(coor);
+            }
+            // check elevator
+            if(layout[l][r][c].type == 'E') {
+                for(uint16_t i = 0; i < numFloors; i++) {
+                    if(layout[i][r][c].type == 'E' && 
+                    layout[i][r][c].isDiscovered == false) {
+                        coordinate coor(i, r, c);
+                        searchContainer.push_front(coor);
+                        layout[i][r][c].isDiscovered = true;
+                    }
                 }
             }
         } // while
-    }
+    } // findSolution
+
+    // TODO
+    void tracePath() {
+
+    } // tracePath
+
 }; // spacestation class
