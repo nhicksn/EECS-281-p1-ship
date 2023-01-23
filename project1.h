@@ -153,9 +153,9 @@ public:
                     }
                     else if(input[i] == 'S') {
                         s.type = 'S';
-                        startPosition.level = static_cast<uint16_t>(layout.size() - 1);
-                        startPosition.row = static_cast<uint16_t>(level.size() - 1);
-                        startPosition.column = static_cast<uint16_t>(row.size() - 1);
+                        startPosition.level = static_cast<uint16_t>(layout.size());
+                        startPosition.row = static_cast<uint16_t>(level.size());
+                        startPosition.column = static_cast<uint16_t>(row.size());
                     }
                     else {
                         cerr << "Invalid map character\n";
@@ -228,27 +228,24 @@ public:
         } // list mode input
     } // inputLayoutTiles
 
-    // TODO
     void outputSolution() {
-        for(int i = 0; i < numFloors; i++) {
-            cout << "//level " << i << '\n';
-            for(int j = 0; j < floorSize; j++) {
-                for(int k = 0; k < floorSize; k++) {
-                    cout << layout[i][j][k].type; 
+        if(outputModeMap) {
+            cout << "Start in level " << startPosition.level << ", row " << 
+            startPosition.row << ", column " << startPosition.column << '\n';
+            for(int i = 0; i < numFloors; i++) {
+                cout << "//level " << i << '\n';
+                for(int j = 0; j < floorSize; j++) {
+                    for(int k = 0; k < floorSize; k++) {
+                        cout << layout[i][j][k].type; 
+                    }
+                    cout << "\n";
                 }
-                cout << "\n";
             }
         }
+        else { //TODO
+            cout << "//path taken\n";
+        } // output mode for list
     }
-
-
-    // for testing purposes
-    // void outputPositions() {
-    //     // check if start position is correct
-    //     cout << "Start position: " << unsigned(startPosition.level) << ", " << 
-    //     unsigned(startPosition.row) << ", " << unsigned(startPosition.column) << '\n';
-    // }
-
     
     // TODO
     void findSolution() {
@@ -256,15 +253,68 @@ public:
         layout[startPosition.level][startPosition.row][startPosition.column].isDiscovered 
                                                                                 = true;
         while(!searchContainer.empty()) {
-            if(searchModeStack) {
-                currentLocation = searchContainer.front();
-                searchContainer.pop_front();
-            } // stack mode
-            else {
-                currentLocation = searchContainer.back();
-                searchContainer.pop_back();
-            } // queue mode
-            
+            currentLocation = searchContainer.front();
+            searchContainer.pop_front();
+
+            uint16_t level = currentLocation.level;
+            uint16_t row = currentLocation.row;
+            uint16_t column = currentLocation.column;
+            // check north
+            if(row > 0 && layout[level][row - 1][column].isDiscovered == false && 
+                                    layout[level][row - 1][column].type != '#') {
+                coordinate c;
+                c.level = level;
+                c.row = row - 1;
+                c.column = column;
+                if(searchModeStack) {
+                    searchContainer.push_front(c);
+                }
+                else {
+                    searchContainer.push_back(c);
+                }
+            }
+            // check east
+            if(column < floorSize - 1 && layout[level][row][column + 1].isDiscovered == false && 
+                                    layout[level][row + 1][column].type != '#') {
+                coordinate c;
+                c.level = level;
+                c.row = row;
+                c.column = column + 1;
+                if(searchModeStack) {
+                    searchContainer.push_front(c);
+                }
+                else {
+                    searchContainer.push_back(c);
+                }
+            }
+            //check south
+            if(row < floorSize - 1 && layout[level][row + 1][column].isDiscovered == false && 
+                                    layout[level][row + 1][column].type != '#') {
+                coordinate c;
+                c.level = level;
+                c.row = row + 1;
+                c.column = column;
+                if(searchModeStack) {
+                    searchContainer.push_front(c);
+                }
+                else {
+                    searchContainer.push_back(c);
+                }
+            }
+            //check west
+            if(column > 0 && layout[level][row][column - 1].isDiscovered == false && 
+                                    layout[level][column - 1][column].type != '#') {
+                coordinate c;
+                c.level = level;
+                c.row = row;
+                c.column = column - 1;
+                if(searchModeStack) {
+                    searchContainer.push_front(c);
+                }
+                else {
+                    searchContainer.push_back(c);
+                }
+            }
         } // while
     }
 }; // spacestation class
