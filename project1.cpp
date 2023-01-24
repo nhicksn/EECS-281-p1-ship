@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
     spaceStation s(argc, argv);
     s.inputLayoutTiles();
     s.findSolution();
+    s.tracePath();
     s.outputSolution();
 } // main
 

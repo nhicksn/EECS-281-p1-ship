@@ -4,6 +4,7 @@
 #include <iostream>
 #include <deque>
 #include <cstdint>
+#include <stack>
 #include <getopt.h>
 
 using namespace std;
@@ -22,6 +23,13 @@ struct square {
     square() : type('u'), direction('u') {}
 };
 
+struct path {
+    uint16_t l, r, c;
+    char direction;
+    path(uint16_t le, uint16_t ro, uint16_t co, char d) :
+    l(le), r(ro), c(co), direction(d) {}
+};
+
 class spaceStation {
 private:
     vector<vector<vector<square> > > layout;
@@ -32,9 +40,11 @@ private:
     bool hangarFound = false;
     uint16_t numFloors;
     uint16_t floorSize;
-    coordinate startPosition;
-    coordinate currentLocation;
+    coordinate start;
+    coordinate hangar;
+    coordinate current;
     deque<coordinate> searchContainer;
+    stack<path> listOutput;
 
     void printHelp() {
         cout << "Usage: ./ship [-s|-q] [-o M|L] | -h\nYou must specify either stack ";
@@ -153,15 +163,20 @@ public:
                 }
                 for(size_t i = 0; i < input.size(); i++) {
                     square s;
-                    if(input[i] == '.' || input[i] == '#' || input[i] == 'E' || 
-                                                            input[i] == 'H') {
+                    if(input[i] == '.' || input[i] == '#' || input[i] == 'E' ) {
                         s.type = input[i];
+                    }
+                    else if(input[i] == 'H') {
+                        s.type = 'H';
+                        hangar.level = static_cast<uint16_t>(layout.size());
+                        hangar.row = static_cast<uint16_t>(level.size());
+                        hangar.column = static_cast<uint16_t>(row.size());
                     }
                     else if(input[i] == 'S') {
                         s.type = 'S';
-                        startPosition.level = static_cast<uint16_t>(layout.size());
-                        startPosition.row = static_cast<uint16_t>(level.size());
-                        startPosition.column = static_cast<uint16_t>(row.size());
+                        start.level = static_cast<uint16_t>(layout.size());
+                        start.row = static_cast<uint16_t>(level.size());
+                        start.column = static_cast<uint16_t>(row.size());
                     }
                     else {
                         cerr << "Invalid map character\n";
@@ -201,14 +216,20 @@ public:
                     cin >> column;
                     cin >> input;
                     cin >> input;
-                    if(input == '.' || input == '#' || input == 'E' || input == 'H') {
+                    if(input == '.' || input == '#' || input == 'E') {
                         s.type = input;
+                    }
+                    else if(input == 'H') {
+                        s.type = 'H';
+                        hangar.level = level;
+                        hangar.row = row;
+                        hangar.column = column;
                     }
                     else if(input == 'S') {
                         s.type = 'S';
-                        startPosition.level = level;
-                        startPosition.row = row;
-                        startPosition.column = column;
+                        start.level = level;
+                        start.row = row;
+                        start.column = column;
                     }
                     else {
                         cerr << "Invalid map character\n";
@@ -235,8 +256,8 @@ public:
 
     void outputSolution() {
         if(outputModeMap) {
-            cout << "Start in level " << startPosition.level << ", row " << 
-            startPosition.row << ", column " << startPosition.column << '\n';
+            cout << "Start in level " << start.level << ", row " << 
+            start.row << ", column " << start.column << '\n';
             for(int i = 0; i < numFloors; i++) {
                 cout << "//level " << i << '\n';
                 for(int j = 0; j < floorSize; j++) {
@@ -249,30 +270,37 @@ public:
         }
         else { //TODO
             cout << "//path taken\n";
-            if(hangarFound == false) {
+            if(!hangarFound) {
                 return;
+            }
+            else {
+                size_t size = listOutput.size();
+                for(size_t i = 0; i < size; i++) {
+                    cout << '(' << listOutput.top().l << ',' << listOutput.top().r << ',' 
+                    << listOutput.top().c << ',' << listOutput.top().direction << ")\n";
+                    listOutput.pop();
+                }
             }
         } // output mode for list
     }
     
     // TODO
     void findSolution() {
-        searchContainer.push_back(startPosition);
-        layout[startPosition.level][startPosition.row][startPosition.column].isDiscovered 
-                                                                                = true;
+        searchContainer.push_back(start);
+        layout[start.level][start.row][start.column].isDiscovered = true;
         while(!searchContainer.empty()) {
             if(searchModeStack) {
-                currentLocation = searchContainer.front();
+                current = searchContainer.front();
                 searchContainer.pop_front();
             }
             else {
-                currentLocation = searchContainer.back();
+                current = searchContainer.back();
                 searchContainer.pop_back();
             }
 
-            uint16_t l = currentLocation.level;
-            uint16_t r = currentLocation.row;
-            uint16_t c = currentLocation.column;
+            uint16_t l = current.level;
+            uint16_t r = current.row;
+            uint16_t c = current.column;
 
             // check north
             if(r > 0 && layout[l][r - 1][c].isDiscovered == false 
@@ -342,6 +370,7 @@ public:
                         coordinate coor(i, r, c);
                         searchContainer.push_front(coor);
                         layout[i][r][c].isDiscovered = true;
+                        layout[i][r][c].direction = static_cast<char>('0' + l);
                     }
                 }
             }
@@ -350,7 +379,88 @@ public:
 
     // TODO
     void tracePath() {
-
+        coordinate loc(hangar.level, hangar.row, hangar.column);
+        if(!hangarFound) {
+            return;
+        }
+        // trace back on the layout vector
+        if(outputModeMap) {
+            while(true) {
+                if(layout[loc.level][loc.row][loc.column].direction == 'n') {
+                    if(layout[loc.level][loc.row + 1][loc.column].type == 'S') {
+                        layout[loc.level][loc.row + 1][loc.column].type = 'n';
+                        return;
+                    }
+                    layout[loc.level][loc.row + 1][loc.column].type = 'n';
+                    loc.row++;
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 'e') {
+                    if(layout[loc.level][loc.row][loc.column - 1].type == 'S') {
+                        layout[loc.level][loc.row][loc.column - 1].type = 'e';
+                        return;
+                    }
+                    layout[loc.level][loc.row][loc.column - 1].type = 'e';
+                    loc.column--;
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 's') {
+                    if(layout[loc.level][loc.row - 1][loc.column].type == 'S') {
+                        layout[loc.level][loc.row - 1][loc.column].type = 's';
+                        return;
+                    }
+                    layout[loc.level][loc.row - 1][loc.column].type = 's';
+                    loc.row--;
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 'w') {
+                    if(layout[loc.level][loc.row][loc.column + 1].type == 'S') {
+                        layout[loc.level][loc.row][loc.column + 1].type = 'w';
+                        return;
+                    }
+                    layout[loc.level][loc.row][loc.column + 1].type = 'w';
+                    loc.column++;
+                }
+                else {
+                    // level of the elevator you took to get on this level
+                    char levelElevator = layout[loc.level][loc.row][loc.column].direction;
+                    // update that elevator to have the level you get off on
+                    layout[static_cast<uint16_t>(levelElevator - '0')][loc.row][loc.column].type = static_cast<char>(loc.level + '0');
+                    loc.level = static_cast<uint16_t>(levelElevator - '0');
+                }
+            }
+        }
+        // trace back using the path stack
+        else {
+            while(layout[loc.level][loc.row][loc.column].type != 'S') {
+                if(layout[loc.level][loc.row][loc.column].direction == 'n') {
+                    path p(loc.level, static_cast<uint16_t>(loc.row + 1), loc.column, 'n');
+                    loc.row++;
+                    listOutput.push(p);
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 'e') {
+                    path p(loc.level, loc.row, static_cast<uint16_t>(loc.column - 1), 'e');
+                    loc.column--;
+                    listOutput.push(p);
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 's') {
+                    path p(loc.level, static_cast<uint16_t>(loc.row - 1), loc.column, 's');
+                    loc.row--;
+                    listOutput.push(p);
+                }
+                else if(layout[loc.level][loc.row][loc.column].direction == 'w') {
+                    path p(loc.level, loc.row, static_cast<uint16_t>(loc.column + 1), 'w');
+                    loc.column++;
+                    listOutput.push(p);
+                }
+                else {
+                    // level of the elevator you took to get on this level
+                    char levelElevator = layout[loc.level][loc.row][loc.column].direction;
+                    // update that elevator to have the level you get off on
+                    path p(static_cast<uint16_t>(levelElevator - '0'), loc.row, loc.column, static_cast<char>(loc.level + '0'));
+                    loc.level = static_cast<uint16_t>(levelElevator - '0');
+                    listOutput.push(p);
+                }
+            }
+            
+        }
     } // tracePath
 
 }; // spacestation class
