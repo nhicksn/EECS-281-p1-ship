@@ -268,7 +268,7 @@ public:
                 }
             }
         }
-        else { //TODO
+        else {
             cout << "//path taken\n";
             if(!hangarFound) {
                 return;
@@ -284,7 +284,6 @@ public:
         } // output mode for list
     }
     
-    // TODO
     void findSolution() {
         searchContainer.push_back(start);
         layout[start.level][start.row][start.column].isDiscovered = true;
@@ -377,7 +376,6 @@ public:
         } // while
     } // findSolution
 
-    // TODO
     void tracePath() {
         coordinate loc(hangar.level, hangar.row, hangar.column);
         if(!hangarFound) {
