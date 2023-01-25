@@ -262,7 +262,7 @@ public:
                 cout << "//level " << i << '\n';
                 for(int j = 0; j < floorSize; j++) {
                     for(int k = 0; k < floorSize; k++) {
-                        cout << layout[i][j][k].type; 
+                        cout << layout[i][j][k].type;
                     }
                     cout << "\n";
                 }
@@ -377,10 +377,10 @@ public:
     } // findSolution
 
     void tracePath() {
-        coordinate loc(hangar.level, hangar.row, hangar.column);
         if(!hangarFound) {
             return;
         }
+        coordinate loc(hangar.level, hangar.row, hangar.column);
         // trace back on the layout vector
         if(outputModeMap) {
             while(true) {
